@@ -8,6 +8,7 @@ import (
 )
 
 func Openbrowser(url string) {
+  GetvideoData()
   var err error
   switch runtime.GOOS {
   case "linux":
