@@ -1,1 +1,3 @@
-hey this is a bot thats it 
+## This is MeetTuber Bot
+
+![meettuber](./docs/MeetTuberplan.png)
