@@ -1,7 +1,7 @@
 package cli
 
-import "github.com/Seew0/MeetTuber/cli/commands"
+import "github.com/Seew0/MeetTuber/cli/cmd"
 
-func CliInterface(){
-	commands.Execute()	
+func CliInterface() {
+	cmd.Execute()
 }
