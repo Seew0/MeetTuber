@@ -7,13 +7,13 @@ import (
 	"github.com/playwright-community/playwright-go"
 )
 
-func Bot() {
-
+func NewBrowser() playwright.BrowserContext {
 	browserSource := "chrome"
-	source := "Invidious"
 	colorscheme := "dark"
 	TimezoneId := "Asia/Kolkata"
 	locale := "en-US"
+	useragent := "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/94.0.4595.0 Safari/537.36"
+	screenShareSource := "invidious"
 	pw, err := playwright.Run()
 	checkers.CheckForError(err)
 
@@ -22,31 +22,45 @@ func Bot() {
 		Channel:           &browserSource,
 		IgnoreDefaultArgs: []string{"--disable-component-extensions-with-background-pages"},
 		Args: []string{
-			fmt.Sprintf("--auto-select-desktop-capture-source= %s", source),
+			fmt.Sprintf("--auto-select-desktop-capture-source=%s", screenShareSource),
 			"--use-fake-device-for-media-stream",
 			"--use-fake-ui-for-media-stream",
 			"--start-maximized",
 		},
 	})
 	checkers.CheckForError(err)
+
 	context, err := browser.NewContext(playwright.BrowserNewContextOptions{
 		ColorScheme: (*playwright.ColorScheme)(&colorscheme),
 		Viewport:    nil,
 		Locale:      &locale,
+		UserAgent:   &useragent,
 		TimezoneId:  &TimezoneId,
 	})
 	checkers.CheckForError(err)
-	page, err := browser.NewPage()
-	checkers.CheckForError(err)
+
+	return context
+}
+
+func MinimizeBrowser(context playwright.BrowserContext, page playwright.Page) {
+	type bounds struct {
+		windowState string
+	}
+
 	session, err := context.NewCDPSession(page)
 	checkers.CheckForError(err)
-	// fmt.Print(session)
+
 	windowID, err := session.Send("Browser.getWindowForTarget", nil)
 	checkers.CheckForError(err)
-	bounds := map[string]interface{}{}
+
 	session.Send("Browser.setWindowBounds", map[string]interface{}{
 		"windowId": windowID,
-		"bounds":   bounds,
+		"bounds": bounds{
+			windowState: "minimized",
+		},
 	})
-	// defer browser.Close()
+}
+
+func CloseBrowser(context playwright.BrowserContext) {
+	context.Close()
 }
